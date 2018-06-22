@@ -67,7 +67,7 @@ func (g *Ga) evolve() {
 			defer wg.Done()
 			parent1 := g.pick()
 			//			parent2 := g.pick()
-			//			child := parent1.Crossover(parent2)
+			//			child := parent1.Crossover(parent2, g.Rnd)
 			child := parent1.Clone()
 			child.Mutate(g.Rnd)
 			chEvolved <- child
