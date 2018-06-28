@@ -48,7 +48,21 @@ func (g *Ga) Initialize() {
 }
 
 func (g *Ga) pick() Individual {
-	return g.Population[0]
+
+	random := g.Rnd.Float64()
+
+	// отсортировать популяцию в порядке убывания значений
+
+	if random == 0 { // just get best
+		return g.Population[0].Clone()
+	} else {
+		i := 0
+		for ; random > 0; i++ {
+			random -= (g.Population[i].Fitness() / g.totalFitness)
+		}
+		i--
+		return g.Population[i].Clone()
+	}
 }
 
 func (g *Ga) evolve() {
