@@ -80,9 +80,8 @@ func (g *Ga) evolve() {
 		go func() {
 			defer wg.Done()
 			parent1 := g.pick()
-			//			parent2 := g.pick()
-			//			child := parent1.Crossover(parent2, g.Rnd)
-			child := parent1.Clone()
+			parent2 := g.pick()
+			child := parent1.Crossover(parent2, g.Rnd)
 			child.Mutate(g.Rnd)
 			chEvolved <- child
 		}()
