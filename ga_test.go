@@ -32,9 +32,28 @@ func TestTsp(t *testing.T) {
 
 	ga.Initialize()
 	initial := ga.Population[0].Clone()
-	ga.Solve()
+
+	countNotChanged := 0
+	bestEver := initial
+
+	for i := 0; i < ga.Generations; i++ {
+		currBest := ga.Record()
+		if bestEver.Fitness() <= currBest.Fitness() {
+			countNotChanged++
+			bestEver = currBest
+		} else {
+			countNotChanged = 0
+		}
+
+		if countNotChanged > 10 {
+			break
+		}
+		ga.Evolve()
+	}
+
+	//	ga.Solve()
 	fmt.Printf("Initial Way: %v, Score: %f\n", initial.(Path).way, initial.Fitness())
-	fmt.Printf("Way: %v, Score: %f\n", ga.Best.(Path).way, ga.Best.Fitness())
+	fmt.Printf("Way: %v, Score: %f\n", bestEver.(Path).way, bestEver.(Path).Fitness())
 }
 
 type LatLng struct {

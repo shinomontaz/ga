@@ -17,7 +17,6 @@ type Ga struct {
 
 	totalFitness float64
 	Generations  int
-	NotChanged   int
 
 	Population []Individual
 	Best       Individual
@@ -30,14 +29,8 @@ func (g *Ga) Initialize() {
 	}
 
 	if g.Generations == 0 {
-		g.Generations = g.PopSize * 10000
+		g.Generations = g.PopSize * 10
 	}
-
-	if g.NotChanged == 0 {
-		g.NotChanged = 1000
-	}
-
-	//	g.If.Init(g.Rnd)
 
 	g.Population = make([]Individual, 0, g.PopSize)
 	for i := 0; i < g.PopSize; i++ {
@@ -65,7 +58,7 @@ func (g *Ga) pick() Individual {
 	}
 }
 
-func (g *Ga) evolve() {
+func (g *Ga) Evolve() {
 	// create new population in place of current
 	// crossover
 	// mutate
@@ -101,29 +94,10 @@ func (g *Ga) evolve() {
 	g.totalFitness = fitnessSum
 }
 
-func (g *Ga) findBest() Individual {
+func (g *Ga) Record() Individual {
 	sort.SliceStable(g.Population, func(i, j int) bool {
-		return g.Population[i].Fitness() > g.Population[j].Fitness() // it is a "less" function, so we need bigger first
+		return g.Population[i].Fitness() < g.Population[j].Fitness() // it is a "less" function, so we need bigger first
 	})
 
 	return g.Population[0]
-}
-
-func (g *Ga) Solve() {
-	var currBest Individual
-	countNotChanged := 0
-	for i := 0; i < g.Generations; i++ {
-		currBest = g.findBest()
-		if g.Best.Fitness() <= currBest.Fitness() {
-			countNotChanged++
-			g.Best = currBest
-		} else {
-			countNotChanged = 0
-		}
-
-		if countNotChanged > g.NotChanged {
-			return
-		}
-		g.evolve()
-	}
 }
