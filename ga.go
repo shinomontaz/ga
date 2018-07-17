@@ -96,7 +96,7 @@ func (g *Ga) Evolve() {
 
 func (g *Ga) Record() Individual {
 	sort.SliceStable(g.Population, func(i, j int) bool {
-		return g.Population[i].Fitness() < g.Population[j].Fitness() // it is a "less" function, so we need bigger first
+		return g.Population[i].Fitness() > g.Population[j].Fitness() // it is a "less" function, so we need bigger first
 	})
 
 	return g.Population[0]
