@@ -77,15 +77,19 @@ func (p Path) Fitness() float64 {
 }
 
 // Mutate a Path by applying by permutation mutation and/or splice mutation.
-func (p Path) Mutate(rng *rand.Rand) {
+func (p Path) Mutate(rng *rand.Rand) Individual {
 	dice := rand.Float64()
 
 	if dice > 0.01 {
-		return
+		return p
 	}
 
-	randIndex1, randIndex2 := rand.Intn(len(p.way)-1), rand.Intn(len(p.way)-1)
-	p.way[randIndex1], p.way[randIndex2] = p.way[randIndex2], p.way[randIndex1]
+	clone := p.Clone().(Path)
+
+	randIndex1, randIndex2 := rand.Intn(len(clone.way)-1), rand.Intn(len(clone.way)-1)
+	clone.way[randIndex1], clone.way[randIndex2] = clone.way[randIndex2], clone.way[randIndex1]
+
+	return clone
 }
 
 func (p Path) Crossover(q Individual, rnd *rand.Rand) Individual {

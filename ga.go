@@ -20,13 +20,12 @@ type Ga struct {
 
 	Population []Individual
 	Best       Individual
+	lock       sync.Mutex
 }
 
 func (g *Ga) Initialize() {
 	// create initial population
-	if g.Rnd == nil {
-		g.Rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
-	}
+	g.Rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	if g.Generations == 0 {
 		g.Generations = g.PopSize * 10
@@ -41,20 +40,21 @@ func (g *Ga) Initialize() {
 }
 
 func (g *Ga) pick() Individual {
-
+	g.lock.Lock()
 	random := g.Rnd.Float64()
+	g.lock.Unlock()
 
 	// отсортировать популяцию в порядке убывания значений
 
 	if random == 0 { // just get best
-		return g.Population[0].Clone()
+		return g.Population[0]
 	} else {
 		i := 0
 		for ; random > 0; i++ {
 			random -= (g.Population[i].Fitness() / g.totalFitness)
 		}
 		i--
-		return g.Population[i].Clone()
+		return g.Population[i]
 	}
 }
 
@@ -95,7 +95,7 @@ func (g *Ga) Evolve() {
 }
 
 func (g *Ga) Record() Individual {
-	sort.SliceStable(g.Population, func(i, j int) bool {
+	sort.Slice(g.Population, func(i, j int) bool {
 		return g.Population[i].Fitness() > g.Population[j].Fitness() // it is a "less" function, so we need bigger first
 	})
 
