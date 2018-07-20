@@ -5,6 +5,7 @@ import (
 	"math"
 	"math/rand"
 	"testing"
+	"time"
 )
 
 type PathFactory struct {
@@ -13,13 +14,14 @@ type PathFactory struct {
 	points  []*LatLng
 }
 
-func (f *PathFactory) Create(rnd *rand.Rand) Individual {
-	path := Path{way: rnd.Perm(f.N), points: f.points}
+func (f *PathFactory) Create() Individual {
+	path := Path{way: rand.Perm(f.N), points: f.points}
 	return path
 }
 
 func TestTsp(t *testing.T) {
 	var N = 10
+	rand.Seed(time.Now().UnixNano())
 
 	points := createPoints(N)
 	dMatrix := calcDistances(points)
@@ -77,9 +79,8 @@ func (p Path) Fitness() float64 {
 }
 
 // Mutate a Path by applying by permutation mutation and/or splice mutation.
-func (p Path) Mutate(rng *rand.Rand) Individual {
+func (p Path) Mutate() Individual {
 	dice := rand.Float64()
-
 	if dice > 0.01 {
 		return p
 	}
@@ -92,7 +93,7 @@ func (p Path) Mutate(rng *rand.Rand) Individual {
 	return clone
 }
 
-func (p Path) Crossover(q Individual, rnd *rand.Rand) Individual {
+func (p Path) Crossover(q Individual) Individual {
 	return p
 }
 
