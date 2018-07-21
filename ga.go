@@ -35,7 +35,7 @@ func (g *Ga) Initialize() {
 
 	g.Population = make([]Individual, 0, g.PopSize)
 	for i := 0; i < g.PopSize; i++ {
-		g.Population = append(g.Population, g.NewIndividual())
+		g.Population = append(g.Population, g.NewIndividual(g.Rnd))
 	}
 
 	g.Best = g.Population[0]
