@@ -78,7 +78,7 @@ func (p Path) Fitness() float64 {
 
 // Mutate a Path by applying by permutation mutation and/or splice mutation.
 func (p Path) Mutate(rng *rand.Rand) Individual {
-	dice := rand.Float64()
+	dice := rng.Float64()
 
 	if dice > 0.01 {
 		return p

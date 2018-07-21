@@ -3,7 +3,6 @@ package ga
 import (
 	"math/rand"
 	"sort"
-	"sync"
 	"time"
 )
 
@@ -20,7 +19,6 @@ type Ga struct {
 
 	Population []Individual
 	Best       Individual
-	lock       sync.Mutex
 }
 
 func (g *Ga) Initialize() {
@@ -40,9 +38,7 @@ func (g *Ga) Initialize() {
 }
 
 func (g *Ga) pick() Individual {
-	g.lock.Lock()
 	random := g.Rnd.Float64()
-	g.lock.Unlock()
 
 	// отсортировать популяцию в порядке убывания значений
 
@@ -66,28 +62,12 @@ func (g *Ga) Evolve() {
 	newPopulation := make([]Individual, 0, g.PopSize)
 	var fitnessSum float64
 
-	var wg sync.WaitGroup
-	chEvolved := make(chan Individual, g.PopSize)
 	for i := 0; i < g.PopSize; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			parent1 := g.pick()
-			parent2 := g.pick()
-			child := parent1.Crossover(parent2, g.Rnd)
-			child.Mutate(g.Rnd)
-			chEvolved <- child
-		}()
-	}
-
-	go func() {
-		wg.Wait()
-		close(chEvolved)
-	}()
-
-	for newIdividual := range chEvolved {
-		newPopulation = append(newPopulation, newIdividual)
-		fitnessSum += newIdividual.Fitness()
+		parent1 := g.pick()
+		parent2 := g.pick()
+		child := parent1.Crossover(parent2, g.Rnd).Mutate(g.Rnd)
+		newPopulation = append(newPopulation, child)
+		fitnessSum += child.Fitness()
 	}
 
 	g.Population = newPopulation
