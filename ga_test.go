@@ -14,8 +14,8 @@ type PathFactory struct {
 	points  []*LatLng
 }
 
-func (f *PathFactory) Create() Individual {
-	path := Path{way: rand.Perm(f.N), points: f.points}
+func (f *PathFactory) Create(rng *rand.Rand) Individual {
+	path := Path{way: rng.Perm(f.N), points: f.points}
 	return path
 }
 

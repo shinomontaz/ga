@@ -6,9 +6,7 @@ import (
 	"time"
 )
 
-//type IndividualFactory func(rng *rand.Rand) Individual
-
-type IndividualFactory func() Individual
+type IndividualFactory func(rng *rand.Rand) Individual
 
 type Ga struct {
 	NewIndividual IndividualFactory
