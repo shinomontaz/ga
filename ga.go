@@ -19,18 +19,20 @@ type Ga struct {
 	Best       Individual
 
 	Rnd *rand.Rand
+
+	CreateRate float64
+	KeepRate   float64
 }
 
 func (g *Ga) Initialize() {
 	// create initial population
-	//	rand.Seed(time.Now().UnixNano())
 
 	if g.Rnd == nil {
 		g.Rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
 	}
 
 	if g.Generations == 0 {
-		g.Generations = g.PopSize * 10
+		g.Generations = g.PopSize * 20
 	}
 
 	g.Population = make([]Individual, 0, g.PopSize)
@@ -42,7 +44,7 @@ func (g *Ga) Initialize() {
 }
 
 func (g *Ga) pick() Individual {
-	random := rand.Float64()
+	random := g.Rnd.Float64()
 
 	// отсортировать популяцию в порядке убывания значений
 
@@ -65,7 +67,21 @@ func (g *Ga) Evolve() {
 	newPopulation := make([]Individual, 0, g.PopSize)
 	var fitnessSum float64
 
-	for i := 0; i < g.PopSize; i++ {
+	if g.CreateRate > 0 {
+		num := int(float64(g.PopSize) * g.CreateRate)
+		for i := 0; i < num; i++ {
+			newPopulation = append(newPopulation, g.NewIndividual(g.Rnd))
+		}
+	}
+
+	if g.KeepRate > 0 {
+		num := int(float64(g.PopSize) * g.KeepRate)
+		for i := 0; i < num; i++ {
+			newPopulation = append(newPopulation, g.pick())
+		}
+	}
+
+	for i := len(newPopulation); i < g.PopSize; i++ {
 		parent1 := g.pick()
 		parent2 := g.pick()
 		child := parent1.Crossover(parent2, g.Rnd).Mutate(g.Rnd)
