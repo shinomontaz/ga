@@ -38,7 +38,7 @@ func TestTsp(t *testing.T) {
 	countNotChanged := 0
 	bestEver := initial
 
-	for i := 0; i < ga.Generations; i++ {
+	for i := 0; i < 10000; i++ {
 		currBest := ga.Record()
 		if bestEver.Fitness() <= currBest.Fitness() {
 			countNotChanged++

@@ -13,15 +13,15 @@ type Ga struct {
 	PopSize       int
 
 	totalFitness float64
-	Generations  int
 
 	Population []Individual
 	Best       Individual
 
 	Rnd *rand.Rand
 
-	CreateRate float64
-	KeepRate   float64
+	CreateRate     float64
+	KeepRate       float64
+	TournamentSize int
 }
 
 func (g *Ga) Initialize() {
@@ -31,8 +31,8 @@ func (g *Ga) Initialize() {
 		g.Rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
 	}
 
-	if g.Generations == 0 {
-		g.Generations = g.PopSize * 20
+	if g.TournamentSize == 0 {
+		g.TournamentSize = 3
 	}
 
 	g.Population = make([]Individual, 0, g.PopSize)
@@ -44,13 +44,30 @@ func (g *Ga) Initialize() {
 }
 
 func (g *Ga) pick() Individual {
+
+	return g.tournamentSelection(g.TournamentSize)
+	//return g.poolSelection()
+}
+
+func (g *Ga) tournamentSelection(n int) Individual {
+	var best Individual
+	for i := 0; i < n; i++ {
+		inst := g.Population[g.Rnd.Intn(len(g.Population))]
+		if best == nil || inst.Fitness() > best.Fitness() {
+			best = inst
+		}
+	}
+	return best
+}
+
+func (g *Ga) poolSelection() Individual {
+
 	random := g.Rnd.Float64()
 
-	// отсортировать популяцию в порядке убывания значений
-
-	if random == 0 { // just get best
-		return g.Population[0]
+	if random == 0 {
+		return g.Population[0].Clone()
 	}
+
 	i := 0
 	for ; random > 0; i++ {
 		random -= (g.Population[i].Fitness() / g.totalFitness)
