@@ -45,13 +45,13 @@ func (g *Ga) Initialize() {
 
 func (g *Ga) pick() Individual {
 
-	return g.tournamentSelection(g.TournamentSize)
+	return g.tournamentSelection()
 	//return g.poolSelection()
 }
 
-func (g *Ga) tournamentSelection(n int) Individual {
+func (g *Ga) tournamentSelection() Individual {
 	var best Individual
-	for i := 0; i < n; i++ {
+	for i := 0; i < g.TournamentSize; i++ {
 		inst := g.Population[g.Rnd.Intn(len(g.Population))]
 		if best == nil || inst.Fitness() > best.Fitness() {
 			best = inst
