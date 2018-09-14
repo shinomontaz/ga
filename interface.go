@@ -5,4 +5,5 @@ type Individual interface {
 	Mutate() Individual
 	Crossover(parner Individual) (child Individual)
 	Clone() Individual
+	Educate()
 }

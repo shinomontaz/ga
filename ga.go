@@ -95,6 +95,7 @@ func (g *Ga) Evolve() {
 		parent1 := g.pick()
 		parent2 := g.pick()
 		child := parent1.Crossover(parent2).Mutate()
+		child.Educate()
 		newPopulation = append(newPopulation, child)
 		fitnessSum += child.Fitness()
 	}

@@ -78,6 +78,10 @@ func (p Path) Fitness() float64 {
 	return 1 / (distance + 1)
 }
 
+func (p Path) Educate() {
+
+}
+
 // Mutate a Path by applying by permutation mutation and/or splice mutation.
 func (p Path) Mutate() Individual {
 	dice := rand.Float64()
