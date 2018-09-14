@@ -14,8 +14,8 @@ type PathFactory struct {
 	points  []*LatLng
 }
 
-func (f *PathFactory) Create(rng *rand.Rand) Individual {
-	path := Path{way: rng.Perm(f.N), points: f.points}
+func (f *PathFactory) Create() Individual {
+	path := Path{way: rand.Perm(f.N), points: f.points}
 	return path
 }
 
@@ -79,8 +79,8 @@ func (p Path) Fitness() float64 {
 }
 
 // Mutate a Path by applying by permutation mutation and/or splice mutation.
-func (p Path) Mutate(rng *rand.Rand) Individual {
-	dice := rng.Float64()
+func (p Path) Mutate() Individual {
+	dice := rand.Float64()
 
 	if dice > 0.01 {
 		return p
@@ -94,7 +94,7 @@ func (p Path) Mutate(rng *rand.Rand) Individual {
 	return clone
 }
 
-func (p Path) Crossover(q Individual, rng *rand.Rand) Individual {
+func (p Path) Crossover(q Individual) Individual {
 	return p
 }
 

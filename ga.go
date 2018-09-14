@@ -3,10 +3,9 @@ package ga
 import (
 	"math/rand"
 	"sort"
-	"time"
 )
 
-type IndividualFactory func(rng *rand.Rand) Individual
+type IndividualFactory func() Individual
 
 type Ga struct {
 	NewIndividual IndividualFactory
@@ -17,8 +16,6 @@ type Ga struct {
 	Population []Individual
 	Best       Individual
 
-	Rnd *rand.Rand
-
 	CreateRate     float64
 	KeepRate       float64
 	TournamentSize int
@@ -27,17 +24,13 @@ type Ga struct {
 func (g *Ga) Initialize() {
 	// create initial population
 
-	if g.Rnd == nil {
-		g.Rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
-	}
-
 	if g.TournamentSize == 0 {
 		g.TournamentSize = 3
 	}
 
 	g.Population = make([]Individual, 0, g.PopSize)
 	for i := 0; i < g.PopSize; i++ {
-		g.Population = append(g.Population, g.NewIndividual(g.Rnd))
+		g.Population = append(g.Population, g.NewIndividual())
 	}
 
 	g.Best = g.Population[0]
@@ -52,7 +45,7 @@ func (g *Ga) pick() Individual {
 func (g *Ga) tournamentSelection(n int) Individual {
 	var best Individual
 	for i := 0; i < n; i++ {
-		inst := g.Population[g.Rnd.Intn(len(g.Population))]
+		inst := g.Population[rand.Intn(len(g.Population))]
 		if best == nil || inst.Fitness() > best.Fitness() {
 			best = inst
 		}
@@ -62,7 +55,7 @@ func (g *Ga) tournamentSelection(n int) Individual {
 
 func (g *Ga) poolSelection() Individual {
 
-	random := g.Rnd.Float64()
+	random := rand.Float64()
 
 	if random == 0 {
 		return g.Population[0].Clone()
@@ -87,7 +80,7 @@ func (g *Ga) Evolve() {
 	if g.CreateRate > 0 {
 		num := int(float64(g.PopSize) * g.CreateRate)
 		for i := 0; i < num; i++ {
-			newPopulation = append(newPopulation, g.NewIndividual(g.Rnd))
+			newPopulation = append(newPopulation, g.NewIndividual())
 		}
 	}
 
@@ -101,7 +94,7 @@ func (g *Ga) Evolve() {
 	for i := len(newPopulation); i < g.PopSize; i++ {
 		parent1 := g.pick()
 		parent2 := g.pick()
-		child := parent1.Crossover(parent2, g.Rnd).Mutate(g.Rnd)
+		child := parent1.Crossover(parent2).Mutate()
 		newPopulation = append(newPopulation, child)
 		fitnessSum += child.Fitness()
 	}
